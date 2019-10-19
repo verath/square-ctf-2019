@@ -222,7 +222,7 @@ This basically reduces the problem of finding the correct password to
 solving the following equation:
 
 ```
-inputStr[i] ^ predefinedNumber[i] =
+inputStr[i] ^ predefinedNumber[i] = computedValue[i]
 inputStr[i] = computedValue[i] ^ predefinedNumber[i]
 ```
 
